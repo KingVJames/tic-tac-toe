@@ -4,6 +4,7 @@ use std::{
     io::{stdin, Write},
 };
 
+// This is the introduction text. Green.bold is changing the color of the words to green in bold font
 fn main() {
     // Init board
     let board = [[Tile::Empty; 3]; 3];
@@ -11,7 +12,10 @@ fn main() {
         "{} {}",
         Green.bold().paint(">>>"),
         Green.bold().paint("Welcome to Tic-Tac-Toe!")
-    );
+
+    //This below is the instructions on how to play the game before you start playing.
+    // Also the script for the green colored arrows
+    ); 
     arrow_print("You will be randomly assigned a letter, X or O.", Green);
     arrow_print("The computer will play with the other letter.", Green);
     arrow_print("Input is taken as such: <LETTER><NUMBER>", Green);
@@ -21,6 +25,9 @@ fn main() {
     draw_board(&board);
 
     loop {
+        // This is the script for the new game prompt at the start of a match in green bold lettering.
+        // This also assigns you either to be 'X' or 'O' to play as.
+        // You would then press enter to start playing.
         // Init board
         let mut board = [[Tile::Empty; 3]; 3];
         let (player_tile, computer_tile) = assign_hands();
@@ -47,8 +54,11 @@ fn main() {
         let ai = [0, 0];
         let mut iterations = 0;
 
-        loop {
-            // Depending on who is X, X will go first
+        // This talks about if whoever is player 'X' they will always have the first move.
+         // Depending on who is X, X will go first
+            // Then it will then allow player 'O' to have their turn to move and the other player cannot 
+            // make their turn until whoever then places their letter on the board
+    loop {
             if player_tile == Tile::X {
                 let input = take_input(&board);
                 board[input[1]][input[0]] = player_tile;
@@ -63,6 +73,8 @@ fn main() {
             }
 
             // Check if game is over
+            // Game over text will appear letting you know if you wither won, lost , or tied
+            // Wins will have green text and losses will be red and ties are yellow bold letters
             let state = check_board(&board, player_tile, computer_tile);
             match state {
                 BoardState::Win(tile) => {
@@ -84,10 +96,10 @@ fn main() {
                     println!("{}", Yellow.bold().paint(">>> Tie!"));
                     break;
                 }
-
+                // This is for the enter to continue request
                 BoardState::Continue => (),
             }
-
+            // This is for the person who is player 'O' for their stop and start and board placement commands
             if player_tile == Tile::O {
                 let input = take_input(&board);
                 board[input[1]][input[0]] = player_tile;
@@ -99,7 +111,9 @@ fn main() {
                 board[ai[1]][ai[0]] = computer_tile;
                 ai_picked = true;
             }
-
+            // This reads the state of the game to determine everyones placement within the rules of the game.
+            //If a player has either won or lost or ended in a tie, it will then displays the text depending on how 
+            // the player won or lost or tied.
             let state = check_board(&board, player_tile, computer_tile);
             match state {
                 BoardState::Win(tile) => {
@@ -123,7 +137,8 @@ fn main() {
 
                 BoardState::Continue => (),
             }
-
+            // This is to clear the board and start a fresh new game. The older version will be partially 
+            // saved but squeezed up together
             if !ai_picked {
                 clear_screen();
                 draw_board(&board);
@@ -135,7 +150,7 @@ fn main() {
         }
     }
 }
-
+    /// This is the script for the computer player and how it will interact against you
 fn ai_print(board: [[Tile; 3]; 3], ai: [usize; 2], iterations: i32, time_end: std::time::Duration) {
     clear_screen();
     draw_board(&board);
@@ -168,7 +183,8 @@ enum Tile {
     X,
     O,
 }
-
+    /// This is how the computer player picks the spots for their placement of their
+    /// respected letter . This is for placing letters in empty spots
 impl Tile {
     fn to_string(&self) -> String {
         match self {
@@ -178,7 +194,9 @@ impl Tile {
         }
     }
 }
-
+    /// This is the placement of our letters as a player on whatever tile. 
+    /// Below it is also the same mechanism for the computer player.
+    /// It will let him know if a tile is unable to place a letter on it so it will avoid that tile
 fn assign_hands() -> (Tile, Tile) {
     let player_tile = match fastrand::bool() {
         true => Tile::X,
@@ -200,7 +218,8 @@ enum BoardState {
     Tie,
     Continue,
 }
-
+/// This is the alogrith on how the player letters can be placed on the board and how the board is built
+/// in the terminal
 fn draw_board(board: &[[Tile; 3]; 3]) {
     println!("      A   B   C");
     for (row_id, row) in board.iter().enumerate() {
@@ -217,7 +236,7 @@ fn draw_board(board: &[[Tile; 3]; 3]) {
     }
     println!("{}", Green.paint("    +---+---+---+"));
 }
-
+/// This is the script for if you input the wrong commands for the game and the text will appear about your human error
 fn return_error(error: &str, input: &String, board: &[[Tile; 3]; 3]) {
     clear_screen();
     draw_board(board);
@@ -247,6 +266,7 @@ fn return_error(error: &str, input: &String, board: &[[Tile; 3]; 3]) {
     }
 }
 
+/// This is how rust can identify the error and be able to approparitely tell the user what the problem is
 fn take_input(board: &[[Tile; 3]; 3]) -> [usize; 2] {
     'outer: loop {
         // Get user input
@@ -301,6 +321,10 @@ fn take_input(board: &[[Tile; 3]; 3]) -> [usize; 2] {
     }
 }
 
+/// This is for how the game will be able to place your letters on the board
+/// The grid is A to C from left to right and 1 to 3 going from top to bottom
+/// This is how to you can input the commands to then place your letter anywhere on the board 
+/// as long its an appropriate command
 fn convert_input(input: &String) -> [usize; 2] {
     let mut coords = [0; 2];
     for (index, char) in input.chars().enumerate() {
@@ -322,7 +346,8 @@ fn convert_input(input: &String) -> [usize; 2] {
     }
     return coords;
 }
-
+/// This is to mark if the postions of where you would like to place your letter already has a letter 
+/// placed in that position
 fn index_to_string(index: [usize; 2]) -> String {
     let mut string = String::new();
     match index[0] {
@@ -341,7 +366,8 @@ fn index_to_string(index: [usize; 2]) -> String {
 
     return string;
 }
-
+/// This checks to see in what direction you recieved the win when 3 of the same letter is connected
+/// This checks for both the computer and player
 fn check_board(board: &[[Tile; 3]; 3], player_tile: Tile, computer_tile: Tile) -> BoardState {
     // Check for rows
     for row in board {
@@ -398,6 +424,7 @@ fn check_board(board: &[[Tile; 3]; 3], player_tile: Tile, computer_tile: Tile) -
     }
 }
 
+/// This checks the empty tiles to see if the amount of letter that are allowed in the tile
 fn empty_tiles(board: &[[Tile; 3]; 3]) -> Vec<[usize; 2]> {
     let mut spots = Vec::new();
     for (row_index, row) in board.iter().enumerate() {
@@ -411,6 +438,7 @@ fn empty_tiles(board: &[[Tile; 3]; 3]) -> Vec<[usize; 2]> {
     return spots;
 }
 
+/// This reads all the game elements. Let state puts everything together as a board and the players on the board
 fn minimax(
     board: &[[Tile; 3]; 3],
     player_tile: Tile,
@@ -431,7 +459,8 @@ fn minimax(
     } else if state == BoardState::Tie {
         return 0;
     }
-
+    //This reads the score on the state of the board.
+    // This determines the best score then gives the results of if you won 
     // Recursion
     if maximizing {
         let mut best_score = -2;
@@ -458,6 +487,9 @@ fn minimax(
     }
 }
 
+    /// This is the IQ of the computer player and how they will seek to acheieve victory. 
+    /// This can adapt as to the either seeking to win or counter the other player 
+    /// This will calculate all of their best options at that momment in time
 fn computer_move(
     board: &mut [[Tile; 3]; 3],
     player_tile: Tile,

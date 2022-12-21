@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":[["BoardState",""],["Tile",""]],"fn":[["ai_print",""],["arrow_print",""],["assign_hands",""],["check_board",""],["clear_screen",""],["computer_move",""],["convert_input",""],["draw_board",""],["empty_tiles",""],["index_to_string",""],["main",""],["minimax",""],["return_error",""],["take_input",""]]};
